@@ -1,0 +1,2312 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Ninja Alphabet Adventure</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    touch-action:none;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#071b20;
+}
+
+#game{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #123d55 0%,
+        #27647b 38%,
+        #173f3a 68%,
+        #0d2920 100%
+    );
+}
+
+/* =========================
+   BACKGROUND MOON
+========================= */
+
+.moon{
+    position:absolute;
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:#fff4bd;
+    right:12%;
+    top:13%;
+    box-shadow:0 0 35px rgba(255,244,189,.55);
+    z-index:1;
+}
+
+/* =========================
+   MOUNTAINS
+========================= */
+
+.mountain{
+    position:absolute;
+    bottom:27%;
+    width:0;
+    height:0;
+    border-left:130px solid transparent;
+    border-right:130px solid transparent;
+    border-bottom:180px solid #183a3c;
+    z-index:2;
+}
+
+.mountain1{
+    left:-70px;
+}
+
+.mountain2{
+    left:28%;
+    border-left-width:170px;
+    border-right-width:170px;
+    border-bottom-width:220px;
+    border-bottom-color:#20494a;
+}
+
+.mountain3{
+    right:-90px;
+    border-left-width:160px;
+    border-right-width:160px;
+    border-bottom-width:200px;
+    border-bottom-color:#17383b;
+}
+
+/* =========================
+   BAMBOO
+========================= */
+
+.bamboo{
+    position:absolute;
+    bottom:0;
+    width:18px;
+    height:48%;
+    background:
+    repeating-linear-gradient(
+        to bottom,
+        #275d35 0 32px,
+        #183f29 32px 37px
+    );
+    border-radius:10px;
+    z-index:4;
+}
+
+.bamboo:before,
+.bamboo:after{
+    content:"";
+    position:absolute;
+    width:75px;
+    height:16px;
+    background:#2c713b;
+    border-radius:100%;
+}
+
+.bamboo:before{
+    left:-45px;
+    top:35px;
+    transform:rotate(-25deg);
+}
+
+.bamboo:after{
+    right:-45px;
+    top:90px;
+    transform:rotate(25deg);
+}
+
+.b1{
+    left:2%;
+    height:53%;
+}
+
+.b2{
+    left:11%;
+    height:42%;
+}
+
+.b3{
+    right:5%;
+    height:51%;
+}
+
+.b4{
+    right:13%;
+    height:40%;
+}
+
+/* =========================
+   GROUND
+========================= */
+
+.ground{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:28%;
+    background:
+    linear-gradient(
+        to bottom,
+        #214e2e,
+        #0d281c
+    );
+    z-index:5;
+}
+
+/* =========================
+   STARS
+========================= */
+
+.star{
+    position:absolute;
+    color:#fff4b8;
+    font-size:16px;
+    z-index:3;
+    animation:twinkle 2s infinite alternate;
+}
+
+.s1{left:12%;top:18%}
+.s2{left:35%;top:10%}
+.s3{left:60%;top:20%}
+.s4{right:20%;top:9%}
+.s5{right:8%;top:28%}
+
+@keyframes twinkle{
+    from{opacity:.35;transform:scale(.8)}
+    to{opacity:1;transform:scale(1.25)}
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:absolute;
+    top:8px;
+    left:7px;
+    right:7px;
+    display:flex;
+    justify-content:space-between;
+    gap:5px;
+    z-index:500;
+}
+
+.hudBox{
+    background:rgba(255,255,255,.94);
+    border:3px solid #17202a;
+    border-radius:12px;
+    padding:6px 9px;
+    font-size:13px;
+    font-weight:bold;
+    color:#17202a;
+    box-shadow:0 4px 0 rgba(0,0,0,.35);
+}
+
+/* =========================
+   TARGET
+========================= */
+
+#targetBox{
+    position:absolute;
+    top:57px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,.97);
+    border:4px solid #17202a;
+    border-radius:20px;
+    padding:5px 25px 7px;
+    text-align:center;
+    z-index:500;
+    box-shadow:
+        0 5px 0 rgba(0,0,0,.35),
+        0 0 20px rgba(255,221,87,.35);
+}
+
+#targetTitle{
+    font-size:11px;
+    font-weight:bold;
+    color:#333;
+}
+
+#target{
+    font-size:48px;
+    line-height:50px;
+    font-weight:900;
+    color:#e63946;
+    text-shadow:2px 2px 0 #222;
+}
+
+/* =========================
+   LETTER BUBBLES
+========================= */
+
+.letter{
+    position:absolute;
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    overflow:hidden;
+    z-index:100;
+    user-select:none;
+    -webkit-user-select:none;
+
+    box-shadow:
+        0 7px 0 rgba(0,0,0,.35),
+        0 0 16px rgba(255,255,255,.2);
+
+    background:#fff;
+}
+
+.letterPicture{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border:0;
+    border-radius:50%;
+    padding:0;
+}
+
+/* =========================
+   NINJA
+========================= */
+
+.ninja{
+    position:absolute;
+    bottom:7%;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:70px;
+    z-index:50;
+    filter:drop-shadow(0 6px 3px rgba(0,0,0,.45));
+    animation:ninjaIdle 1.8s infinite ease-in-out;
+    pointer-events:none;
+}
+
+@keyframes ninjaIdle{
+    0%,100%{
+        transform:translateX(-50%) translateY(0);
+    }
+    50%{
+        transform:translateX(-50%) translateY(-7px);
+    }
+}
+
+/* =========================
+   SLICE
+========================= */
+
+.sliceLine{
+    position:absolute;
+    height:9px;
+
+    background:
+    linear-gradient(
+        to right,
+        transparent,
+        white,
+        #b9f6ff,
+        white,
+        transparent
+    );
+
+    border-radius:20px;
+
+    box-shadow:
+        0 0 8px white,
+        0 0 18px #66eaff;
+
+    pointer-events:none;
+    z-index:800;
+
+    animation:sliceFade .2s forwards;
+}
+
+@keyframes sliceFade{
+    from{opacity:1}
+    to{opacity:0}
+}
+
+/* =========================
+   STARS EFFECT
+========================= */
+
+.hitStar{
+    position:absolute;
+    z-index:900;
+    pointer-events:none;
+    font-size:22px;
+    animation:starBurst .55s forwards;
+}
+
+@keyframes starBurst{
+    0%{
+        opacity:1;
+        transform:scale(.3) translate(0,0);
+    }
+    100%{
+        opacity:0;
+        transform:scale(1.4) translate(
+            var(--dx),
+            var(--dy)
+        );
+    }
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message{
+    position:absolute;
+    left:50%;
+    top:45%;
+    transform:translate(-50%,-50%);
+    z-index:700;
+    font-size:46px;
+    font-weight:900;
+    color:white;
+    text-shadow:4px 4px 0 #111;
+    opacity:0;
+    pointer-events:none;
+}
+
+.pop{
+    animation:popAnimation .7s ease-out;
+}
+
+@keyframes popAnimation{
+    0%{
+        opacity:0;
+        transform:translate(-50%,-50%) scale(.3);
+    }
+    35%{
+        opacity:1;
+        transform:translate(-50%,-50%) scale(1.2);
+    }
+    100%{
+        opacity:0;
+        transform:translate(-50%,-80%) scale(1);
+    }
+}
+
+/* =========================
+   COMBO
+========================= */
+
+#combo{
+    position:absolute;
+    left:50%;
+    top:30%;
+    transform:translateX(-50%);
+    z-index:650;
+    color:#ffd43b;
+    font-size:30px;
+    font-weight:900;
+    text-shadow:3px 3px 0 #222;
+    opacity:0;
+    pointer-events:none;
+}
+
+.comboShow{
+    animation:comboAnimation .8s ease-out;
+}
+
+@keyframes comboAnimation{
+    0%{
+        opacity:0;
+        transform:translateX(-50%) scale(.5);
+    }
+    35%{
+        opacity:1;
+        transform:translateX(-50%) scale(1.2);
+    }
+    100%{
+        opacity:0;
+        transform:translateX(-50%) scale(1);
+    }
+}
+
+/* =========================
+   OBSTACLES
+========================= */
+
+.obstacle{
+    position:absolute;
+    width:66px;
+    height:66px;
+    object-fit:contain;
+    z-index:120;
+    pointer-events:none;
+    filter:drop-shadow(0 5px 4px rgba(0,0,0,.5));
+}
+
+/* =========================
+   SCREENS
+========================= */
+
+.screen{
+    position:absolute;
+    inset:0;
+    z-index:1000;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+    padding:20px;
+    color:white;
+}
+
+.screen h1{
+    font-size:clamp(42px,10vw,68px);
+    text-shadow:5px 5px 0 #111;
+}
+
+.screen h2{
+    margin:8px 0;
+}
+
+.screen p{
+    margin:5px;
+}
+
+#startScreen{
+    background:
+    linear-gradient(
+        135deg,
+        #102a43,
+        #14532d
+    );
+}
+
+#gameOverScreen{
+    background:
+    linear-gradient(
+        135deg,
+        #401313,
+        #321052
+    );
+}
+
+#winScreen{
+    background:
+    linear-gradient(
+        135deg,
+        #064e3b,
+        #075985
+    );
+}
+
+/* =========================
+   NAME
+========================= */
+
+#playerName{
+    width:min(320px,85vw);
+    padding:14px;
+    margin:18px 0;
+    border:3px solid #222;
+    border-radius:15px;
+    font-size:20px;
+    text-align:center;
+    color:#222;
+    background:white;
+    user-select:text;
+    -webkit-user-select:text;
+    touch-action:auto;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.gameButton{
+    border:4px solid #222;
+    border-radius:20px;
+    background:#ffd43b;
+    color:#222;
+    padding:14px 32px;
+    font-size:21px;
+    font-weight:bold;
+    box-shadow:0 7px 0 #9b7200;
+    touch-action:manipulation;
+}
+
+.gameButton:active{
+    transform:translateY(6px);
+    box-shadow:0 1px 0 #9b7200;
+}
+
+.hidden{
+    display:none !important;
+}
+
+@media(max-height:600px){
+
+    #targetBox{
+        top:48px;
+    }
+
+    .letter{
+        width:76px;
+        height:76px;
+    }
+
+    .ninja{
+        font-size:55px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+<!-- BACKGROUND -->
+
+<div class="moon"></div>
+
+<div class="mountain mountain1"></div>
+<div class="mountain mountain2"></div>
+<div class="mountain mountain3"></div>
+
+<div class="bamboo b1"></div>
+<div class="bamboo b2"></div>
+<div class="bamboo b3"></div>
+<div class="bamboo b4"></div>
+
+<div class="ground"></div>
+
+<div class="star s1">✦</div>
+<div class="star s2">✦</div>
+<div class="star s3">✦</div>
+<div class="star s4">✦</div>
+<div class="star s5">✦</div>
+
+<!-- NINJA -->
+
+<div class="ninja">🥷</div>
+
+<!-- HUD -->
+
+<div id="hud">
+
+    <div class="hudBox">
+        ⭐ <span id="score">0</span>
+    </div>
+
+    <div class="hudBox">
+        ❤️ <span id="lives">5</span>
+    </div>
+
+    <div class="hudBox">
+        LEVEL <span id="level">1</span>
+    </div>
+
+    <div class="hudBox">
+        ⏱️ <span id="timer">10</span>
+    </div>
+
+</div>
+
+<!-- TARGET -->
+
+<div id="targetBox">
+
+    <div id="targetTitle">
+        FIND & SLICE
+    </div>
+
+    <div id="target">A</div>
+
+</div>
+
+<div id="message"></div>
+
+<div id="combo"></div>
+
+<!-- START -->
+
+<div id="startScreen" class="screen">
+
+    <h1>🥷 Ninja</h1>
+
+    <h2>Alphabet Adventure</h2>
+
+    <p>Find and slice the correct letter!</p>
+
+    <p>🔤 A–U</p>
+
+    <p>❤️ 5 Lives</p>
+
+    <input
+        id="playerName"
+        type="text"
+        maxlength="20"
+        placeholder="Enter your name"
+        autocomplete="off"
+    >
+
+    <button
+        id="startButton"
+        class="gameButton">
+
+        START GAME
+
+    </button>
+
+    <p style="margin-top:15px;">
+        Ms. Ramezanzadeh
+    </p>
+
+</div>
+
+<!-- GAME OVER -->
+
+<div id="gameOverScreen" class="screen hidden">
+
+    <h1>💥 GAME OVER</h1>
+
+    <h2 id="gameOverName"></h2>
+
+    <p>
+        Score:
+        <strong id="finalScore">0</strong>
+    </p>
+
+    <p>
+        Level:
+        <strong id="finalLevel">1</strong>
+    </p>
+
+    <button
+        id="againButton"
+        class="gameButton"
+        style="margin-top:18px;">
+
+        TRY AGAIN
+
+    </button>
+
+    <p style="margin-top:15px;">
+        Ms. Ramezanzadeh
+    </p>
+
+</div>
+
+<!-- WIN -->
+
+<div id="winScreen" class="screen hidden">
+
+    <h1>🏆 NINJA MASTER!</h1>
+
+    <h2>Excellent Job!</h2>
+
+    <p id="winName"></p>
+
+    <p>
+        Score:
+        <strong id="winScore">0</strong>
+    </p>
+
+    <button
+        id="winAgainButton"
+        class="gameButton"
+        style="margin-top:18px;">
+
+        PLAY AGAIN
+
+    </button>
+
+    <p style="margin-top:15px;">
+        Ms. Ramezanzadeh
+    </p>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================================
+   ALPHABET
+========================================= */
+
+const alphabet =
+"ABCDEFGHIJKLMNOPQRSTU".split("");
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let letters = [];
+let obstacles = [];
+let shuffledAlphabet = [];
+
+let target = "A";
+
+let score = 0;
+let lives = 5;
+let level = 1;
+let currentIndex = 0;
+
+let timeLeft = 10;
+
+let timer = null;
+let running = false;
+
+let playerName = "Ninja";
+
+let audioContext = null;
+
+let lastX = 0;
+let lastY = 0;
+
+let comboCount = 0;
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const game =
+document.getElementById("game");
+
+const targetEl =
+document.getElementById("target");
+
+const scoreEl =
+document.getElementById("score");
+
+const livesEl =
+document.getElementById("lives");
+
+const levelEl =
+document.getElementById("level");
+
+const timerEl =
+document.getElementById("timer");
+
+const message =
+document.getElementById("message");
+
+const comboEl =
+document.getElementById("combo");
+
+const nameInput =
+document.getElementById("playerName");
+
+const startScreen =
+document.getElementById("startScreen");
+
+const gameOverScreen =
+document.getElementById("gameOverScreen");
+
+const winScreen =
+document.getElementById("winScreen");
+
+
+/* =========================================
+   SHUFFLE
+========================================= */
+
+function shuffle(array){
+
+    const arr = [...array];
+
+    for(
+        let i=arr.length-1;
+        i>0;
+        i--
+    ){
+
+        const j =
+        Math.floor(
+            Math.random()*(i+1)
+        );
+
+        [
+            arr[i],
+            arr[j]
+        ] =
+        [
+            arr[j],
+            arr[i]
+        ];
+    }
+
+    return arr;
+}
+
+
+/* =========================================
+   AUDIO
+========================================= */
+
+function initAudio(){
+
+    if(!audioContext){
+
+        const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+        if(AudioContext){
+
+            audioContext =
+            new AudioContext();
+        }
+    }
+
+    if(
+        audioContext &&
+        audioContext.state==="suspended"
+    ){
+
+        audioContext.resume();
+    }
+}
+
+
+function tone(
+frequency,
+duration,
+type="sine",
+volume=.25
+){
+
+    if(!audioContext)return;
+
+    const osc =
+    audioContext.createOscillator();
+
+    const gain =
+    audioContext.createGain();
+
+    osc.type = type;
+
+    osc.frequency.value =
+    frequency;
+
+    gain.gain.setValueAtTime(
+        volume,
+        audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioContext.currentTime+duration
+    );
+
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start();
+
+    osc.stop(
+        audioContext.currentTime+duration
+    );
+}
+
+
+function sliceSound(){
+
+    if(!audioContext)return;
+
+    const osc =
+    audioContext.createOscillator();
+
+    const gain =
+    audioContext.createGain();
+
+    osc.type="sawtooth";
+
+    osc.frequency.setValueAtTime(
+        1800,
+        audioContext.currentTime
+    );
+
+    osc.frequency.exponentialRampToValueAtTime(
+        150,
+        audioContext.currentTime+.12
+    );
+
+    gain.gain.setValueAtTime(
+        .35,
+        audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioContext.currentTime+.12
+    );
+
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start();
+
+    osc.stop(
+        audioContext.currentTime+.12
+    );
+}
+
+
+function correctSound(){
+
+    tone(
+        600,
+        .1,
+        "square",
+        .2
+    );
+
+    setTimeout(function(){
+
+        tone(
+            900,
+            .14,
+            "square",
+            .2
+        );
+
+    },100);
+}
+
+
+function wrongSound(){
+
+    tone(
+        120,
+        .3,
+        "sawtooth",
+        .35
+    );
+}
+
+
+function gameOverSound(){
+
+    tone(
+        180,
+        .35,
+        "sawtooth",
+        .45
+    );
+
+    setTimeout(function(){
+
+        tone(
+            120,
+            .45,
+            "sawtooth",
+            .45
+        );
+
+    },300);
+
+    setTimeout(function(){
+
+        tone(
+            70,
+            .7,
+            "sawtooth",
+            .45
+        );
+
+    },700);
+}
+
+
+/* =========================================
+   IMAGE LOADER
+========================================= */
+
+function loadLetterImage(letter,img){
+
+    const upper =
+    letter.toUpperCase();
+
+    const extensions=[
+        "jpeg",
+        "png",
+        "jpg"
+    ];
+
+    let index=0;
+
+    function tryNext(){
+
+        if(index>=extensions.length){
+
+            img.style.display="none";
+
+            console.log(
+                "IMAGE NOT FOUND:",
+                upper
+            );
+
+            return;
+        }
+
+        const filename =
+        upper+"."+extensions[index];
+
+        index++;
+
+        img.onload=function(){
+
+            img.style.display="block";
+
+        };
+
+        img.onerror=function(){
+
+            tryNext();
+
+        };
+
+        img.src="./"+filename;
+    }
+
+    tryNext();
+}
+
+
+/* =========================================
+   LETTER AUDIO
+========================================= */
+
+function playLetterSound(letter){
+
+    return new Promise(function(resolve){
+
+        const upper =
+        letter.toUpperCase();
+
+        const audio =
+        new Audio(
+            "./"+upper+".mp3"
+        );
+
+        audio.volume=1;
+
+        let finished=false;
+
+        function finish(){
+
+            if(finished)return;
+
+            finished=true;
+
+            resolve();
+        }
+
+        audio.onended=finish;
+
+        audio.onerror=function(){
+
+            console.log(
+                "VOICE NOT FOUND:",
+                upper
+            );
+
+            finish();
+        };
+
+        audio.play()
+        .then(function(){
+
+            console.log(
+                "VOICE PLAYING:",
+                upper
+            );
+
+        })
+        .catch(function(){
+
+            finish();
+
+        });
+
+    });
+}
+
+
+/* =========================================
+   OBSTACLE IMAGE
+========================================= */
+
+function loadObstacle(names,img){
+
+    let index=0;
+
+    function tryNext(){
+
+        if(index>=names.length){
+
+            img.style.display="none";
+
+            return;
+        }
+
+        const filename =
+        names[index++];
+
+        img.onload=function(){
+
+            img.style.display="block";
+
+        };
+
+        img.onerror=function(){
+
+            tryNext();
+
+        };
+
+        img.src="./"+filename;
+    }
+
+    tryNext();
+}
+
+
+/* =========================================
+   START GAME
+========================================= */
+
+function startGame(){
+
+    initAudio();
+
+    playerName =
+    nameInput.value.trim() ||
+    "Ninja";
+
+    score=0;
+    lives=5;
+    level=1;
+    currentIndex=0;
+    comboCount=0;
+
+    shuffledAlphabet =
+    shuffle(alphabet);
+
+    running=true;
+
+    clearLetters();
+    clearObstacles();
+
+    startScreen.classList.add("hidden");
+    gameOverScreen.classList.add("hidden");
+    winScreen.classList.add("hidden");
+
+    updateHUD();
+
+    nextRound();
+}
+
+
+/* =========================================
+   HUD
+========================================= */
+
+function updateHUD(){
+
+    scoreEl.textContent=score;
+    livesEl.textContent=lives;
+    levelEl.textContent=level;
+    timerEl.textContent=timeLeft;
+}
+
+
+/* =========================================
+   NEXT ROUND
+========================================= */
+
+function nextRound(){
+
+    if(!running)return;
+
+    clearLetters();
+    clearObstacles();
+
+    if(
+        currentIndex>=
+        shuffledAlphabet.length
+    ){
+
+        winGame();
+
+        return;
+    }
+
+    const base =
+    shuffledAlphabet[currentIndex];
+
+    target =
+    Math.random()<.5
+    ?
+    base
+    :
+    base.toLowerCase();
+
+    targetEl.textContent=target;
+
+    timeLeft =
+    Math.max(
+        5,
+        11-level
+    );
+
+    createLetters();
+    createObstacles();
+
+    updateHUD();
+
+    startTimer();
+
+    currentIndex++;
+
+    level =
+    Math.min(
+        10,
+        Math.floor(currentIndex/5)+1
+    );
+
+    updateHUD();
+}
+
+
+/* =========================================
+   CREATE LETTERS
+========================================= */
+
+function createLetters(){
+
+    const count =
+    Math.min(
+        6+Math.floor(level/2),
+        10
+    );
+
+    const targetUpper =
+    target.toUpperCase();
+
+    const list=[
+        targetUpper,
+        targetUpper.toLowerCase()
+    ];
+
+    while(list.length<count){
+
+        const wrong =
+        alphabet[
+            Math.floor(
+                Math.random()*
+                alphabet.length
+            )
+        ];
+
+        if(wrong===targetUpper){
+
+            continue;
+        }
+
+        list.push(
+            Math.random()<.5
+            ?
+            wrong
+            :
+            wrong.toLowerCase()
+        );
+    }
+
+    shuffle(list).forEach(function(display){
+
+        createLetter(display);
+
+    });
+}
+
+
+/* =========================================
+   CREATE LETTER
+========================================= */
+
+function createLetter(display){
+
+    const el =
+    document.createElement("div");
+
+    el.className="letter";
+
+    const img =
+    document.createElement("img");
+
+    img.className="letterPicture";
+
+    loadLetterImage(
+        display,
+        img
+    );
+
+    el.appendChild(img);
+
+    const maxX =
+    Math.max(
+        10,
+        window.innerWidth-100
+    );
+
+    const maxY =
+    Math.max(
+        40,
+        window.innerHeight-290
+    );
+
+    const obj={
+
+        el:el,
+
+        display:display,
+
+        base:
+        display.toUpperCase(),
+
+        x:
+        10+
+        Math.random()*maxX,
+
+        y:
+        145+
+        Math.random()*maxY,
+
+        vx:
+        (
+            Math.random()<.5
+            ?-1:1
+        )*
+        (
+            .65+
+            Math.random()*
+            (1+level*.12)
+        ),
+
+        vy:
+        (
+            Math.random()<.5
+            ?-1:1
+        )*
+        (
+            .45+
+            Math.random()*
+            (1+level*.1)
+        ),
+
+        rotation:0,
+
+        vr:
+        (
+            Math.random()-.5
+        )*4,
+
+        alive:true
+    };
+
+    game.appendChild(el);
+
+    letters.push(obj);
+}
+
+
+/* =========================================
+   OBSTACLES
+========================================= */
+
+function createObstacles(){
+
+    const count =
+    level>=5 ? 2 : 1;
+
+    for(
+        let i=0;
+        i<count;
+        i++
+    ){
+
+        const img =
+        document.createElement("img");
+
+        img.className="obstacle";
+
+        if(
+            Math.random()<.5
+        ){
+
+            loadObstacle(
+                [
+                    "bomb.png",
+                    "Bomb.png",
+                    "BOMB.png",
+                    "bomb.PNG",
+                    "Bomb.PNG",
+                    "bomb.jpeg",
+                    "Bomb.jpeg"
+                ],
+                img
+            );
+
+        }else{
+
+            loadObstacle(
+                [
+                    "ninja-star.png",
+                    "Ninja-Star.png",
+                    "NINJA-STAR.png",
+                    "ninja_star.png",
+                    "Ninja_Star.png",
+                    "ninja-star.jpeg"
+                ],
+                img
+            );
+        }
+
+        const obj={
+
+            el:img,
+
+            x:
+            20+
+            Math.random()*
+            Math.max(
+                20,
+                window.innerWidth-80
+            ),
+
+            y:
+            160+
+            Math.random()*
+            Math.max(
+                20,
+                window.innerHeight-310
+            ),
+
+            vx:
+            (
+                Math.random()<.5
+                ?-1:1
+            )*
+            (
+                1+level*.1
+            ),
+
+            vy:
+            (
+                Math.random()<.5
+                ?-1:1
+            )*
+            (
+                .5+level*.08
+            ),
+
+            rotation:0,
+
+            vr:
+            (
+                Math.random()-.5
+            )*6
+        };
+
+        game.appendChild(img);
+
+        obstacles.push(obj);
+    }
+}
+
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+function animate(){
+
+    if(running){
+
+        const w =
+        window.innerWidth;
+
+        const h =
+        window.innerHeight;
+
+        letters.forEach(function(obj){
+
+            if(!obj.alive)return;
+
+            obj.x+=obj.vx;
+            obj.y+=obj.vy;
+            obj.rotation+=obj.vr;
+
+            if(
+                obj.x<5 ||
+                obj.x>w-95
+            ){
+
+                obj.vx*=-1;
+            }
+
+            if(
+                obj.y<130 ||
+                obj.y>h-230
+            ){
+
+                obj.vy*=-1;
+            }
+
+            obj.el.style.transform=
+            `
+            translate(
+                ${obj.x}px,
+                ${obj.y}px
+            )
+            rotate(
+                ${obj.rotation}deg
+            )
+            `;
+        });
+
+        obstacles.forEach(function(obj){
+
+            obj.x+=obj.vx;
+            obj.y+=obj.vy;
+            obj.rotation+=obj.vr;
+
+            if(
+                obj.x<5 ||
+                obj.x>w-70
+            ){
+
+                obj.vx*=-1;
+            }
+
+            if(
+                obj.y<130 ||
+                obj.y>h-230
+            ){
+
+                obj.vy*=-1;
+            }
+
+            obj.el.style.transform=
+            `
+            translate(
+                ${obj.x}px,
+                ${obj.y}px
+            )
+            rotate(
+                ${obj.rotation}deg
+            )
+            `;
+        });
+    }
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+
+/* =========================================
+   TIMER
+========================================= */
+
+function startTimer(){
+
+    clearInterval(timer);
+
+    timer=
+    setInterval(function(){
+
+        if(!running)return;
+
+        timeLeft--;
+
+        updateHUD();
+
+        if(timeLeft<=0){
+
+            clearInterval(timer);
+
+            loseLife("TIME UP!");
+        }
+
+    },1000);
+}
+
+
+/* =========================================
+   POINTER
+========================================= */
+
+game.addEventListener(
+"pointerdown",
+function(e){
+
+    if(
+        e.target.closest(".gameButton") ||
+        e.target.tagName==="INPUT"
+    ){
+
+        return;
+    }
+
+    if(!running)return;
+
+    lastX=e.clientX;
+    lastY=e.clientY;
+
+    checkCollision(
+        e.clientX,
+        e.clientY
+    );
+});
+
+
+game.addEventListener(
+"pointermove",
+function(e){
+
+    if(!running)return;
+
+    drawSlice(
+        lastX,
+        lastY,
+        e.clientX,
+        e.clientY
+    );
+
+    lastX=e.clientX;
+    lastY=e.clientY;
+
+    checkCollision(
+        e.clientX,
+        e.clientY
+    );
+});
+
+
+/* =========================================
+   COLLISION
+========================================= */
+
+function checkCollision(x,y){
+
+    if(!running)return;
+
+    letters.forEach(function(obj){
+
+        if(!obj.alive)return;
+
+        const rect =
+        obj.el.getBoundingClientRect();
+
+        const cx =
+        rect.left+
+        rect.width/2;
+
+        const cy =
+        rect.top+
+        rect.height/2;
+
+        const distance =
+        Math.hypot(
+            x-cx,
+            y-cy
+        );
+
+        if(distance<62){
+
+            sliceLetter(obj);
+        }
+    });
+
+    obstacles.forEach(function(obj){
+
+        const rect =
+        obj.el.getBoundingClientRect();
+
+        const cx =
+        rect.left+
+        rect.width/2;
+
+        const cy =
+        rect.top+
+        rect.height/2;
+
+        const distance =
+        Math.hypot(
+            x-cx,
+            y-cy
+        );
+
+        if(distance<50){
+
+            hitObstacle(obj);
+        }
+    });
+}
+
+
+/* =========================================
+   SLICE LETTER
+========================================= */
+
+function sliceLetter(obj){
+
+    if(!obj.alive)return;
+
+    obj.alive=false;
+
+    sliceSound();
+
+    createStars(obj);
+
+    obj.el.classList.add("hit");
+
+    const correct =
+    obj.display.toUpperCase()
+    ===
+    target.toUpperCase();
+
+    if(correct){
+
+        correctLetter(obj);
+
+    }else{
+
+        wrongLetter();
+    }
+
+    setTimeout(function(){
+
+        obj.el.remove();
+
+    },250);
+}
+
+
+/* =========================================
+   CORRECT
+========================================= */
+
+async function correctLetter(obj){
+
+    clearInterval(timer);
+
+    correctSound();
+
+    comboCount++;
+
+    let points =
+    10*level;
+
+    if(comboCount>=3){
+
+        points += comboCount*5;
+
+        showCombo();
+
+    }
+
+    score+=points;
+
+    showMessage("GREAT!");
+
+    updateHUD();
+
+    /*
+       IMPORTANT:
+       NEXT LETTER WAITS
+       UNTIL THE AUDIO FINISHES.
+    */
+
+    await playLetterSound(obj.base);
+
+    if(!running)return;
+
+    nextRound();
+}
+
+
+/* =========================================
+   WRONG
+========================================= */
+
+function wrongLetter(){
+
+    comboCount=0;
+
+    lives--;
+
+    score=
+    Math.max(
+        0,
+        score-5
+    );
+
+    wrongSound();
+
+    showMessage("WRONG!");
+
+    updateHUD();
+
+    if(lives<=0){
+
+        setTimeout(
+            gameOver,
+            500
+        );
+    }
+}
+
+
+/* =========================================
+   OBSTACLE
+========================================= */
+
+function hitObstacle(obj){
+
+    comboCount=0;
+
+    lives--;
+
+    score=
+    Math.max(
+        0,
+        score-10
+    );
+
+    wrongSound();
+
+    showMessage("OUCH!");
+
+    createExplosion(obj);
+
+    obj.el.remove();
+
+    updateHUD();
+
+    if(lives<=0){
+
+        setTimeout(
+            gameOver,
+            500
+        );
+    }
+}
+
+
+/* =========================================
+   STARS
+========================================= */
+
+function createStars(obj){
+
+    const rect =
+    obj.el.getBoundingClientRect();
+
+    for(
+        let i=0;
+        i<6;
+        i++
+    ){
+
+        const s =
+        document.createElement("div");
+
+        s.className="hitStar";
+
+        s.textContent="⭐";
+
+        s.style.left=
+        rect.left+
+        "px";
+
+        s.style.top=
+        rect.top+
+        "px";
+
+        s.style.setProperty(
+            "--dx",
+            (
+                Math.random()*100-50
+            )+"px"
+        );
+
+        s.style.setProperty(
+            "--dy",
+            (
+                Math.random()*100-50
+            )+"px"
+        );
+
+        game.appendChild(s);
+
+        setTimeout(function(){
+
+            s.remove();
+
+        },600);
+    }
+}
+
+
+/* =========================================
+   EXPLOSION
+========================================= */
+
+function createExplosion(obj){
+
+    const rect =
+    obj.el.getBoundingClientRect();
+
+    const boom =
+    document.createElement("div");
+
+    boom.textContent="💥";
+
+    boom.style.position="absolute";
+    boom.style.left=rect.left+"px";
+    boom.style.top=rect.top+"px";
+    boom.style.fontSize="60px";
+    boom.style.zIndex="900";
+    boom.style.pointerEvents="none";
+
+    boom.style.animation=
+    "popAnimation .5s ease-out";
+
+    game.appendChild(boom);
+
+    setTimeout(function(){
+
+        boom.remove();
+
+    },500);
+}
+
+
+/* =========================================
+   COMBO
+========================================= */
+
+function showCombo(){
+
+    comboEl.textContent=
+    "🔥 COMBO ×"+comboCount+"!";
+
+    comboEl.classList.remove(
+        "comboShow"
+    );
+
+    void comboEl.offsetWidth;
+
+    comboEl.classList.add(
+        "comboShow"
+    );
+}
+
+
+/* =========================================
+   SLICE LINE
+========================================= */
+
+function drawSlice(
+x1,y1,x2,y2
+){
+
+    const line =
+    document.createElement("div");
+
+    line.className="sliceLine";
+
+    const dx=x2-x1;
+    const dy=y2-y1;
+
+    const length=
+    Math.sqrt(
+        dx*dx+dy*dy
+    );
+
+    if(length<3)return;
+
+    const angle=
+    Math.atan2(dy,dx)
+    *180/Math.PI;
+
+    line.style.width=
+    length+"px";
+
+    line.style.left=
+    x1+"px";
+
+    line.style.top=
+    y1+"px";
+
+    line.style.transform=
+    `rotate(${angle}deg)`;
+
+    game.appendChild(line);
+
+    setTimeout(function(){
+
+        line.remove();
+
+    },180);
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(text){
+
+    message.textContent=text;
+
+    message.classList.remove("pop");
+
+    void message.offsetWidth;
+
+    message.classList.add("pop");
+}
+
+
+/* =========================================
+   LOSE LIFE
+========================================= */
+
+function loseLife(reason){
+
+    if(!running)return;
+
+    comboCount=0;
+
+    lives--;
+
+    wrongSound();
+
+    showMessage(reason);
+
+    updateHUD();
+
+    if(lives<=0){
+
+        setTimeout(
+            gameOver,
+            500
+        );
+
+    }else{
+
+        setTimeout(
+            nextRound,
+            600
+        );
+    }
+}
+
+
+/* =========================================
+   GAME OVER
+========================================= */
+
+function gameOver(){
+
+    if(!running)return;
+
+    running=false;
+
+    clearInterval(timer);
+
+    clearLetters();
+    clearObstacles();
+
+    gameOverSound();
+
+    document.getElementById(
+        "gameOverName"
+    ).textContent=
+    "Well played, "+playerName+"!";
+
+    document.getElementById(
+        "finalScore"
+    ).textContent=score;
+
+    document.getElementById(
+        "finalLevel"
+    ).textContent=level;
+
+    gameOverScreen.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* =========================================
+   WIN
+========================================= */
+
+function winGame(){
+
+    running=false;
+
+    clearInterval(timer);
+
+    clearLetters();
+    clearObstacles();
+
+    tone(
+        523,
+        .2,
+        "square",
+        .2
+    );
+
+    setTimeout(function(){
+
+        tone(
+            659,
+            .2,
+            "square",
+            .2
+        );
+
+    },150);
+
+    setTimeout(function(){
+
+        tone(
+            784,
+            .3,
+            "square",
+            .2
+        );
+
+    },300);
+
+    document.getElementById(
+        "winName"
+    ).textContent=
+    "Amazing job, "+playerName+"!";
+
+    document.getElementById(
+        "winScore"
+    ).textContent=score;
+
+    winScreen.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* =========================================
+   CLEAR
+========================================= */
+
+function clearLetters(){
+
+    letters.forEach(function(obj){
+
+        if(obj.el){
+            obj.el.remove();
+        }
+
+    });
+
+    letters=[];
+}
+
+
+function clearObstacles(){
+
+    obstacles.forEach(function(obj){
+
+        if(obj.el){
+            obj.el.remove();
+        }
+
+    });
+
+    obstacles=[];
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+document
+.getElementById("startButton")
+.addEventListener(
+"click",
+startGame
+);
+
+document
+.getElementById("againButton")
+.addEventListener(
+"click",
+startGame
+);
+
+document
+.getElementById("winAgainButton")
+.addEventListener(
+"click",
+startGame
+);
+
+
+/* =========================================
+   ENTER
+========================================= */
+
+nameInput.addEventListener(
+"keydown",
+function(e){
+
+    if(e.key==="Enter"){
+
+        startGame();
+    }
+});
+
+</script>
+
+</body>
+</html>
