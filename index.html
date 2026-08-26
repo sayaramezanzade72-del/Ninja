@@ -1,0 +1,2236 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no">
+
+<title>Ninja Alphabet Adventure</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    touch-action:none;
+}
+
+body{
+    background:#07111f;
+}
+
+#game{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+
+    background:
+    radial-gradient(
+        circle at 50% 15%,
+        #294866,
+        #101c2c 50%,
+        #050a12
+    );
+}
+
+
+/* =========================
+   BACKGROUND
+========================= */
+
+.moon{
+    position:absolute;
+    width:75px;
+    height:75px;
+    right:8%;
+    top:8%;
+    border-radius:50%;
+    background:#fff4bd;
+    box-shadow:0 0 30px #fff4bd;
+}
+
+.star{
+    position:absolute;
+    width:4px;
+    height:4px;
+    background:white;
+    border-radius:50%;
+}
+
+.s1{left:8%;top:15%}
+.s2{left:20%;top:28%}
+.s3{left:35%;top:10%}
+.s4{left:48%;top:20%}
+.s5{left:65%;top:9%}
+.s6{left:80%;top:25%}
+.s7{left:90%;top:15%}
+.s8{left:15%;top:40%}
+.s9{left:42%;top:35%}
+.s10{left:58%;top:40%}
+
+.ground{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:20%;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #184526,
+        #06170b
+    );
+}
+
+
+/* =========================
+   NINJA
+========================= */
+
+.ninja{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+    translate(-50%,-50%);
+
+    width:130px;
+    height:130px;
+
+    z-index:20;
+
+    pointer-events:none;
+}
+
+.ninja img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+
+    filter:
+    drop-shadow(
+        0 6px 8px
+        rgba(0,0,0,.6)
+    );
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:absolute;
+
+    top:8px;
+    left:7px;
+    right:7px;
+
+    display:flex;
+    justify-content:space-between;
+
+    z-index:500;
+
+    gap:4px;
+}
+
+.hud{
+    background:white;
+    color:#111;
+
+    border:3px solid #111;
+    border-radius:12px;
+
+    padding:6px 9px;
+
+    font-size:13px;
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 0
+    rgba(0,0,0,.3);
+}
+
+
+/* =========================
+   TARGET
+========================= */
+
+#targetBox{
+    position:absolute;
+
+    top:58px;
+    left:50%;
+
+    transform:
+    translateX(-50%);
+
+    z-index:500;
+
+    background:white;
+
+    border:4px solid #111;
+    border-radius:18px;
+
+    padding:5px 25px;
+
+    text-align:center;
+
+    box-shadow:
+    0 5px 0
+    rgba(0,0,0,.3);
+}
+
+#targetTitle{
+    font-size:11px;
+    font-weight:bold;
+}
+
+#target{
+    font-size:46px;
+    line-height:48px;
+
+    color:#e63946;
+
+    font-weight:900;
+
+    text-shadow:
+    2px 2px 0 #222;
+}
+
+
+/* =========================
+   IMAGE CIRCLES
+========================= */
+
+.letter{
+    position:absolute;
+
+    width:78px;
+    height:78px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:#ddd;
+
+    border:4px solid white;
+
+    box-shadow:
+    0 6px 0
+    rgba(0,0,0,.4),
+
+    0 0 15px
+    rgba(255,255,255,.4);
+
+    z-index:100;
+
+    user-select:none;
+
+    -webkit-user-select:none;
+}
+
+
+/*
+    فقط عکس
+    هیچ حرفی داخل دایره نیست
+*/
+
+.letter img{
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    pointer-events:none;
+}
+
+
+/* =========================
+   BOMB
+========================= */
+
+.bomb{
+    position:absolute;
+
+    width:62px;
+    height:62px;
+
+    object-fit:contain;
+
+    z-index:150;
+
+    pointer-events:none;
+
+    filter:
+    drop-shadow(
+        0 5px 5px
+        rgba(0,0,0,.6)
+    );
+}
+
+
+/* =========================
+   SLICE
+========================= */
+
+.slice{
+    position:absolute;
+
+    height:7px;
+
+    background:
+    linear-gradient(
+        to right,
+        transparent,
+        white,
+        #baf5ff,
+        white,
+        transparent
+    );
+
+    border-radius:10px;
+
+    box-shadow:
+    0 0 8px white,
+    0 0 18px #70eaff;
+
+    pointer-events:none;
+
+    z-index:800;
+
+    animation:
+    fadeSlice .2s forwards;
+}
+
+@keyframes fadeSlice{
+    from{
+        opacity:1;
+    }
+
+    to{
+        opacity:0;
+    }
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message{
+    position:absolute;
+
+    left:50%;
+    top:45%;
+
+    transform:
+    translate(-50%,-50%);
+
+    z-index:700;
+
+    color:white;
+
+    font-size:48px;
+
+    font-weight:900;
+
+    text-shadow:
+    4px 4px 0 #111;
+
+    opacity:0;
+
+    pointer-events:none;
+}
+
+.showMessage{
+    animation:
+    messageAnim .7s ease-out;
+}
+
+@keyframes messageAnim{
+
+    0%{
+        opacity:0;
+        transform:
+        translate(-50%,-50%)
+        scale(.3);
+    }
+
+    30%{
+        opacity:1;
+        transform:
+        translate(-50%,-50%)
+        scale(1.2);
+    }
+
+    100%{
+        opacity:0;
+        transform:
+        translate(-50%,-80%)
+        scale(1);
+    }
+}
+
+
+/* =========================
+   SCREENS
+========================= */
+
+.screen{
+    position:absolute;
+    inset:0;
+
+    z-index:1000;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+
+    color:white;
+
+    padding:20px;
+}
+
+.start{
+    background:
+    radial-gradient(
+        circle,
+        #263b55,
+        #08111f 70%
+    );
+}
+
+.gameover{
+    background:
+    linear-gradient(
+        135deg,
+        #8b0000,
+        #26000a
+    );
+}
+
+.win{
+    background:
+    linear-gradient(
+        135deg,
+        #00695c,
+        #073b73
+    );
+}
+
+.hidden{
+    display:none !important;
+}
+
+
+/* =========================
+   START
+========================= */
+
+h1{
+    font-size:
+    clamp(40px,10vw,65px);
+
+    text-shadow:
+    4px 4px 0 #111;
+}
+
+h2{
+    margin:8px;
+}
+
+p{
+    margin:5px;
+}
+
+#name{
+    width:min(320px,85vw);
+
+    padding:14px;
+
+    margin:18px 0;
+
+    border:3px solid #222;
+
+    border-radius:15px;
+
+    font-size:20px;
+
+    text-align:center;
+}
+
+
+/* =========================
+   BUTTON
+========================= */
+
+button{
+    border:4px solid #222;
+
+    border-radius:20px;
+
+    background:#ffd43b;
+
+    color:#222;
+
+    padding:14px 32px;
+
+    font-size:21px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 7px 0 #9b7200;
+
+    cursor:pointer;
+}
+
+button:active{
+    transform:translateY(5px);
+
+    box-shadow:
+    0 2px 0 #9b7200;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-height:600px){
+
+    #targetBox{
+        top:48px;
+    }
+
+    .letter{
+        width:68px;
+        height:68px;
+    }
+
+    .ninja{
+        width:110px;
+        height:110px;
+    }
+
+    .bomb{
+        width:52px;
+        height:52px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div id="game">
+
+
+<!-- BACKGROUND -->
+
+<div class="moon"></div>
+
+<div class="star s1"></div>
+<div class="star s2"></div>
+<div class="star s3"></div>
+<div class="star s4"></div>
+<div class="star s5"></div>
+<div class="star s6"></div>
+<div class="star s7"></div>
+<div class="star s8"></div>
+<div class="star s9"></div>
+<div class="star s10"></div>
+
+<div class="ground"></div>
+
+
+<!-- NINJA -->
+
+<div class="ninja">
+    <img src="./ninja.jpg">
+</div>
+
+
+<!-- HUD -->
+
+<div id="hud">
+
+    <div class="hud">
+        ⭐ <span id="score">0</span>
+    </div>
+
+    <div class="hud">
+        ❤️ <span id="lives">5</span>
+    </div>
+
+    <div class="hud">
+        LEVEL <span id="level">1</span>
+    </div>
+
+    <div class="hud">
+        ⏱️ <span id="timer">10</span>
+    </div>
+
+</div>
+
+
+<!-- TARGET -->
+
+<div id="targetBox">
+
+    <div id="targetTitle">
+        SLICE THIS LETTER
+    </div>
+
+    <div id="target">
+        A
+    </div>
+
+</div>
+
+
+<!-- MESSAGE -->
+
+<div id="message"></div>
+
+
+<!-- START SCREEN -->
+
+<div id="startScreen"
+     class="screen start">
+
+    <h1>
+        🥷 Ninja
+    </h1>
+
+    <h2>
+        Alphabet Adventure
+    </h2>
+
+    <p>
+        Slice the correct picture!
+    </p>
+
+    <p>
+        🔤 A–Z
+    </p>
+
+    <p>
+        ❤️ 5 Lives
+    </p>
+
+    <input
+        id="name"
+        type="text"
+        maxlength="20"
+        placeholder="Enter your name"
+        autocomplete="off"
+    >
+
+    <button id="startButton">
+        START GAME
+    </button>
+
+    <p style="margin-top:15px;">
+        Ms. Ramezanzadeh
+    </p>
+
+</div>
+
+
+<!-- GAME OVER -->
+
+<div id="gameOver"
+     class="screen gameover hidden">
+
+    <h1>
+        💥 GAME OVER
+    </h1>
+
+    <h2 id="gameOverName"></h2>
+
+    <p>
+        Score:
+        <strong id="finalScore">0</strong>
+    </p>
+
+    <p>
+        Level:
+        <strong id="finalLevel">1</strong>
+    </p>
+
+    <button id="again">
+        PLAY AGAIN
+    </button>
+
+</div>
+
+
+<!-- WIN -->
+
+<div id="win"
+     class="screen win hidden">
+
+    <h1>
+        🏆 YOU WIN!
+    </h1>
+
+    <h2>
+        Excellent Job!
+    </h2>
+
+    <p id="winName"></p>
+
+    <p>
+        Score:
+        <strong id="winScore">0</strong>
+    </p>
+
+    <button id="winAgain">
+        PLAY AGAIN
+    </button>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const game =
+document.getElementById("game");
+
+const startScreen =
+document.getElementById("startScreen");
+
+const gameOver =
+document.getElementById("gameOver");
+
+const win =
+document.getElementById("win");
+
+const nameInput =
+document.getElementById("name");
+
+const scoreEl =
+document.getElementById("score");
+
+const livesEl =
+document.getElementById("lives");
+
+const levelEl =
+document.getElementById("level");
+
+const timerEl =
+document.getElementById("timer");
+
+const targetEl =
+document.getElementById("target");
+
+const message =
+document.getElementById("message");
+
+
+/* =========================================
+   GAME DATA
+========================================= */
+
+const alphabet =
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+let currentTarget = "";
+
+let round = 0;
+
+let score = 0;
+
+let lives = 5;
+
+let level = 1;
+
+let timeLeft = 10;
+
+let timer = null;
+
+let running = false;
+
+let playerName = "Ninja";
+
+let circles = [];
+
+let bombs = [];
+
+let audioContext = null;
+
+
+/* =========================================
+   AUDIO
+========================================= */
+
+function initAudio(){
+
+    if(!audioContext){
+
+        const AC =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+        if(AC){
+
+            audioContext =
+            new AC();
+
+        }
+
+    }
+
+    if(
+        audioContext &&
+        audioContext.state === "suspended"
+    ){
+
+        audioContext.resume();
+
+    }
+}
+
+
+function beep(
+    frequency,
+    duration,
+    type="sine"
+){
+
+    if(!audioContext){
+        return;
+    }
+
+    const oscillator =
+    audioContext.createOscillator();
+
+    const gain =
+    audioContext.createGain();
+
+    oscillator.frequency.value =
+    frequency;
+
+    oscillator.type =
+    type;
+
+    gain.gain.setValueAtTime(
+        .25,
+        audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioContext.currentTime +
+        duration
+    );
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        audioContext.destination
+    );
+
+    oscillator.start();
+
+    oscillator.stop(
+        audioContext.currentTime +
+        duration
+    );
+}
+
+
+function correctSound(){
+
+    beep(600,.1,"square");
+
+    setTimeout(
+        ()=>{
+            beep(900,.15,"square");
+        },
+        100
+    );
+}
+
+
+function wrongSound(){
+
+    beep(
+        120,
+        .3,
+        "sawtooth"
+    );
+}
+
+
+function sliceSound(){
+
+    beep(
+        1600,
+        .1,
+        "sawtooth"
+    );
+}
+
+
+/* =========================================
+   PLAY LETTER MP3
+========================================= */
+
+function playLetterSound(letter){
+
+    const audio =
+    new Audio(
+        "./" +
+        letter +
+        ".mp3"
+    );
+
+    audio.volume = 1;
+
+    audio.play().catch(
+        ()=>{}
+    );
+}
+
+
+/* =========================================
+   START GAME
+========================================= */
+
+function startGame(){
+
+    initAudio();
+
+    playerName =
+    nameInput.value.trim() ||
+    "Ninja";
+
+    score = 0;
+
+    lives = 5;
+
+    level = 1;
+
+    round = 0;
+
+    running = true;
+
+    startScreen.classList.add(
+        "hidden"
+    );
+
+    gameOver.classList.add(
+        "hidden"
+    );
+
+    win.classList.add(
+        "hidden"
+    );
+
+    clearAll();
+
+    updateHUD();
+
+    nextRound();
+}
+
+
+/* =========================================
+   NEXT ROUND
+========================================= */
+
+function nextRound(){
+
+    if(!running){
+        return;
+    }
+
+    clearInterval(timer);
+
+    clearAll();
+
+    if(round >= 26){
+
+        winGame();
+
+        return;
+    }
+
+
+    /*
+       انتخاب Target
+    */
+
+    currentTarget =
+    alphabet[round];
+
+
+    targetEl.textContent =
+    currentTarget;
+
+
+    /*
+       Level
+    */
+
+    level =
+    Math.min(
+        10,
+        Math.floor(round / 5) + 1
+    );
+
+
+    /*
+       زمان
+    */
+
+    timeLeft =
+    Math.max(
+        5,
+        11 - level
+    );
+
+
+    /*
+       ساخت تصاویر
+    */
+
+    createPictures();
+
+
+    /*
+       ساخت بمب
+    */
+
+    createBombs();
+
+
+    round++;
+
+
+    updateHUD();
+
+    startTimer();
+}
+
+
+/* =========================================
+   CREATE PICTURES
+========================================= */
+
+function createPictures(){
+
+    /*
+       همیشه حداقل 6 تصویر
+    */
+
+    const number =
+    Math.min(
+        6 + Math.floor(level / 2),
+        10
+    );
+
+
+    let selected = [];
+
+
+    /*
+       Target حتماً داخل لیست
+    */
+
+    selected.push(
+        currentTarget
+    );
+
+
+    /*
+       انتخاب تصاویر دیگر
+    */
+
+    while(
+        selected.length < number
+    ){
+
+        const letter =
+        alphabet[
+            Math.floor(
+                Math.random() *
+                alphabet.length
+            )
+        ];
+
+
+        if(
+            !selected.includes(
+                letter
+            )
+        ){
+
+            selected.push(
+                letter
+            );
+
+        }
+    }
+
+
+    /*
+       Shuffle
+    */
+
+    selected.sort(
+        ()=>Math.random()-.5
+    );
+
+
+    /*
+       ساخت همه تصاویر
+    */
+
+    selected.forEach(
+        (letter,index)=>{
+
+            createPicture(
+                letter,
+                index,
+                number
+            );
+
+        }
+    );
+}
+
+
+/* =========================================
+   CREATE PICTURE
+========================================= */
+
+function createPicture(
+    letter,
+    index,
+    total
+){
+
+    const div =
+    document.createElement(
+        "div"
+    );
+
+    div.className =
+    "letter";
+
+
+    /*
+       فقط عکس
+    */
+
+    const img =
+    document.createElement(
+        "img"
+    );
+
+    img.src =
+    "./" +
+    letter +
+    ".jpg";
+
+    img.alt =
+    "";
+
+
+    /*
+       اگر عکس وجود نداشت،
+       همان دایره حذف شود.
+    */
+
+    img.onerror =
+    function(){
+
+        div.remove();
+
+    };
+
+
+    div.appendChild(img);
+
+    game.appendChild(div);
+
+
+    /*
+       جای تصادفی
+       ولی با فاصله مناسب
+    */
+
+    let x;
+    let y;
+
+    let tries = 0;
+
+
+    do{
+
+        x =
+        10 +
+        Math.random() *
+        (
+            window.innerWidth -
+            100
+        );
+
+
+        y =
+        150 +
+        Math.random() *
+        (
+            window.innerHeight -
+            250
+        );
+
+
+        tries++;
+
+    }
+    while(
+        tooClose(
+            x,
+            y
+        ) &&
+        tries < 100
+    );
+
+
+    const obj = {
+
+        el:div,
+
+        letter:letter,
+
+        x:x,
+
+        y:y,
+
+        vx:
+        (
+            Math.random() < .5
+            ? -1
+            : 1
+        ) *
+        (
+            .5 +
+            Math.random() *
+            .8
+        ),
+
+        vy:
+        (
+            Math.random() < .5
+            ? -1
+            : 1
+        ) *
+        (
+            .4 +
+            Math.random() *
+            .7
+        ),
+
+        rotation:
+        Math.random()*360,
+
+        vr:
+        (
+            Math.random()-.5
+        ) * 2,
+
+        alive:true
+    };
+
+
+    circles.push(obj);
+
+
+    div.style.transform =
+    `translate(
+        ${x}px,
+        ${y}px
+    )`;
+}
+
+
+/* =========================================
+   AVOID OVERLAP
+========================================= */
+
+function tooClose(
+x,
+y
+){
+
+    for(
+        const obj of circles
+    ){
+
+        const distance =
+        Math.hypot(
+            x - obj.x,
+            y - obj.y
+        );
+
+
+        if(
+            distance < 90
+        ){
+
+            return true;
+
+        }
+    }
+
+
+    return false;
+}
+
+
+/* =========================================
+   BOMBS
+========================================= */
+
+function createBombs(){
+
+    const number =
+    Math.min(
+        level,
+        3
+    );
+
+
+    for(
+        let i=0;
+        i<number;
+        i++
+    ){
+
+        const img =
+        document.createElement(
+            "img"
+        );
+
+        img.className =
+        "bomb";
+
+        img.src =
+        "./bomb.jpg";
+
+
+        const obj = {
+
+            el:img,
+
+            x:
+            20 +
+            Math.random() *
+            (
+                window.innerWidth -
+                90
+            ),
+
+            y:
+            170 +
+            Math.random() *
+            (
+                window.innerHeight -
+                300
+            ),
+
+            vx:
+            (
+                Math.random() < .5
+                ? -1
+                : 1
+            ) *
+            .7,
+
+            vy:
+            (
+                Math.random() < .5
+                ? -1
+                : 1
+            ) *
+            .6,
+
+            rotation:0,
+
+            vr:
+            2
+        };
+
+
+        game.appendChild(img);
+
+        bombs.push(obj);
+    }
+}
+
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+function animate(){
+
+    if(running){
+
+        const width =
+        window.innerWidth;
+
+        const height =
+        window.innerHeight;
+
+
+        /*
+           تصاویر
+        */
+
+        circles.forEach(
+            obj=>{
+
+                if(!obj.alive){
+                    return;
+                }
+
+
+                obj.x += obj.vx;
+
+                obj.y += obj.vy;
+
+                obj.rotation += obj.vr;
+
+
+                if(
+                    obj.x < 5 ||
+                    obj.x >
+                    width - 83
+                ){
+
+                    obj.vx *= -1;
+
+                }
+
+
+                if(
+                    obj.y < 135 ||
+                    obj.y >
+                    height - 170
+                ){
+
+                    obj.vy *= -1;
+
+                }
+
+
+                obj.el.style.transform =
+                `translate(
+                    ${obj.x}px,
+                    ${obj.y}px
+                )
+                rotate(
+                    ${obj.rotation}deg
+                )`;
+
+            }
+        );
+
+
+        /*
+           بمب‌ها
+        */
+
+        bombs.forEach(
+            obj=>{
+
+                obj.x += obj.vx;
+
+                obj.y += obj.vy;
+
+                obj.rotation += obj.vr;
+
+
+                if(
+                    obj.x < 5 ||
+                    obj.x >
+                    width - 70
+                ){
+
+                    obj.vx *= -1;
+
+                }
+
+
+                if(
+                    obj.y < 135 ||
+                    obj.y >
+                    height - 170
+                ){
+
+                    obj.vy *= -1;
+
+                }
+
+
+                obj.el.style.transform =
+                `translate(
+                    ${obj.x}px,
+                    ${obj.y}px
+                )
+                rotate(
+                    ${obj.rotation}deg
+                )`;
+
+            }
+        );
+
+    }
+
+
+    requestAnimationFrame(
+        animate
+    );
+}
+
+
+animate();
+
+
+/* =========================================
+   TIMER
+========================================= */
+
+function startTimer(){
+
+    clearInterval(timer);
+
+
+    timer =
+    setInterval(
+        ()=>{
+
+            if(!running){
+                return;
+            }
+
+
+            timeLeft--;
+
+            updateHUD();
+
+
+            if(
+                timeLeft <= 0
+            ){
+
+                clearInterval(timer);
+
+                loseLife(
+                    "TIME UP!"
+                );
+
+            }
+
+        },
+        1000
+    );
+}
+
+
+/* =========================================
+   POINTER
+========================================= */
+
+let lastX = 0;
+let lastY = 0;
+
+
+game.addEventListener(
+    "pointerdown",
+    e=>{
+
+        if(
+            !running ||
+            e.target.tagName ===
+            "BUTTON" ||
+            e.target.tagName ===
+            "INPUT"
+        ){
+            return;
+        }
+
+
+        lastX =
+        e.clientX;
+
+        lastY =
+        e.clientY;
+
+
+        checkHit(
+            e.clientX,
+            e.clientY
+        );
+
+    }
+);
+
+
+game.addEventListener(
+    "pointermove",
+    e=>{
+
+        if(!running){
+            return;
+        }
+
+
+        drawSlice(
+            lastX,
+            lastY,
+            e.clientX,
+            e.clientY
+        );
+
+
+        lastX =
+        e.clientX;
+
+        lastY =
+        e.clientY;
+
+
+        checkHit(
+            e.clientX,
+            e.clientY
+        );
+
+    }
+);
+
+
+/* =========================================
+   CHECK HIT
+========================================= */
+
+function checkHit(
+x,
+y
+){
+
+    /*
+       تصاویر
+    */
+
+    for(
+        const obj of circles
+    ){
+
+        if(!obj.alive){
+            continue;
+        }
+
+
+        const rect =
+        obj.el.getBoundingClientRect();
+
+
+        const centerX =
+        rect.left +
+        rect.width / 2;
+
+
+        const centerY =
+        rect.top +
+        rect.height / 2;
+
+
+        const distance =
+        Math.hypot(
+            x - centerX,
+            y - centerY
+        );
+
+
+        if(
+            distance <
+            rect.width / 2
+        ){
+
+            hitPicture(obj);
+
+            return;
+
+        }
+    }
+
+
+    /*
+       بمب
+    */
+
+    for(
+        const obj of bombs
+    ){
+
+        if(
+            !obj.el.parentNode
+        ){
+            continue;
+        }
+
+
+        const rect =
+        obj.el.getBoundingClientRect();
+
+
+        const centerX =
+        rect.left +
+        rect.width / 2;
+
+
+        const centerY =
+        rect.top +
+        rect.height / 2;
+
+
+        const distance =
+        Math.hypot(
+            x - centerX,
+            y - centerY
+        );
+
+
+        if(
+            distance <
+            rect.width / 2
+        ){
+
+            hitBomb(obj);
+
+            return;
+
+        }
+    }
+}
+
+
+/* =========================================
+   HIT PICTURE
+========================================= */
+
+function hitPicture(
+obj
+){
+
+    if(!obj.alive){
+        return;
+    }
+
+
+    obj.alive = false;
+
+
+    sliceSound();
+
+
+    const correct =
+    obj.letter ===
+    currentTarget;
+
+
+    obj.el.style.transition =
+    "transform .2s, opacity .2s";
+
+    obj.el.style.transform +=
+    " scale(0)";
+
+    obj.el.style.opacity =
+    "0";
+
+
+    if(correct){
+
+        correctAnswer();
+
+    }else{
+
+        wrongAnswer();
+
+    }
+
+
+    setTimeout(
+        ()=>{
+
+            if(obj.el){
+                obj.el.remove();
+            }
+
+        },
+        220
+    );
+}
+
+
+/* =========================================
+   CORRECT
+========================================= */
+
+function correctAnswer(){
+
+    clearInterval(timer);
+
+
+    score +=
+    10 * level;
+
+
+    correctSound();
+
+
+    showMessage(
+        "GREAT!"
+    );
+
+
+    updateHUD();
+
+
+    /*
+       صدای حرف
+    */
+
+    playLetterSound(
+        currentTarget
+    );
+
+
+    setTimeout(
+        ()=>{
+
+            if(running){
+
+                nextRound();
+
+            }
+
+        },
+        900
+    );
+}
+
+
+/* =========================================
+   WRONG
+========================================= */
+
+function wrongAnswer(){
+
+    lives--;
+
+    score =
+    Math.max(
+        0,
+        score - 5
+    );
+
+
+    wrongSound();
+
+
+    showMessage(
+        "WRONG!"
+    );
+
+
+    updateHUD();
+
+
+    if(
+        lives <= 0
+    ){
+
+        setTimeout(
+            gameOverScreen,
+            500
+        );
+
+    }
+}
+
+
+/* =========================================
+   BOMB
+========================================= */
+
+function hitBomb(obj){
+
+    lives--;
+
+    score =
+    Math.max(
+        0,
+        score - 10
+    );
+
+
+    wrongSound();
+
+
+    showMessage(
+        "OUCH!"
+    );
+
+
+    obj.el.remove();
+
+
+    bombs =
+    bombs.filter(
+        item =>
+        item !== obj
+    );
+
+
+    updateHUD();
+
+
+    if(
+        lives <= 0
+    ){
+
+        setTimeout(
+            gameOverScreen,
+            500
+        );
+
+    }
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(text){
+
+    message.textContent =
+    text;
+
+
+    message.classList.remove(
+        "showMessage"
+    );
+
+
+    void message.offsetWidth;
+
+
+    message.classList.add(
+        "showMessage"
+    );
+}
+
+
+/* =========================================
+   SLICE LINE
+========================================= */
+
+function drawSlice(
+x1,
+y1,
+x2,
+y2
+){
+
+    const dx =
+    x2 - x1;
+
+    const dy =
+    y2 - y1;
+
+
+    const distance =
+    Math.sqrt(
+        dx*dx +
+        dy*dy
+    );
+
+
+    if(
+        distance < 5
+    ){
+        return;
+    }
+
+
+    const line =
+    document.createElement(
+        "div"
+    );
+
+
+    line.className =
+    "slice";
+
+
+    line.style.width =
+    distance + "px";
+
+
+    line.style.left =
+    x1 + "px";
+
+
+    line.style.top =
+    y1 + "px";
+
+
+    const angle =
+    Math.atan2(
+        dy,
+        dx
+    ) *
+    180 /
+    Math.PI;
+
+
+    line.style.transform =
+    `rotate(${angle}deg)`;
+
+
+    game.appendChild(line);
+
+
+    setTimeout(
+        ()=>{
+            line.remove();
+        },
+        200
+    );
+}
+
+
+/* =========================================
+   HUD
+========================================= */
+
+function updateHUD(){
+
+    scoreEl.textContent =
+    score;
+
+    livesEl.textContent =
+    lives;
+
+    levelEl.textContent =
+    level;
+
+    timerEl.textContent =
+    timeLeft;
+}
+
+
+/* =========================================
+   CLEAR
+========================================= */
+
+function clearAll(){
+
+    circles.forEach(
+        obj=>{
+            if(obj.el){
+                obj.el.remove();
+            }
+        }
+    );
+
+
+    bombs.forEach(
+        obj=>{
+            if(obj.el){
+                obj.el.remove();
+            }
+        }
+    );
+
+
+    circles = [];
+
+    bombs = [];
+}
+
+
+/* =========================================
+   GAME OVER
+========================================= */
+
+function gameOverScreen(){
+
+    if(!running){
+        return;
+    }
+
+
+    running = false;
+
+
+    clearInterval(timer);
+
+
+    clearAll();
+
+
+    document.getElementById(
+        "gameOverName"
+    ).textContent =
+    playerName;
+
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+    score;
+
+
+    document.getElementById(
+        "finalLevel"
+    ).textContent =
+    level;
+
+
+    gameOver.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* =========================================
+   WIN
+========================================= */
+
+function winGame(){
+
+    running = false;
+
+
+    clearInterval(timer);
+
+
+    clearAll();
+
+
+    document.getElementById(
+        "winName"
+    ).textContent =
+    "Great job, " +
+    playerName + "!";
+
+
+    document.getElementById(
+        "winScore"
+    ).textContent =
+    score;
+
+
+    win.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+document
+.getElementById("startButton")
+.addEventListener(
+    "click",
+    startGame
+);
+
+
+document
+.getElementById("again")
+.addEventListener(
+    "click",
+    startGame
+);
+
+
+document
+.getElementById("winAgain")
+.addEventListener(
+    "click",
+    startGame
+);
+
+
+/* =========================================
+   ENTER
+========================================= */
+
+nameInput.addEventListener(
+    "keydown",
+    e=>{
+
+        if(
+            e.key === "Enter"
+        ){
+
+            startGame();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
